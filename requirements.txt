@@ -2,7 +2,7 @@ gunicorn==21.2.0
 absl-py==2.1.0
 aiofiles==22.1.0
 aiosqlite==0.19.0
-Python >=3.7,<3.11
+Python >=3.7
 altgraph==0.17.3
 anyio==3.7.0
 argon2-cffi==21.3.0
