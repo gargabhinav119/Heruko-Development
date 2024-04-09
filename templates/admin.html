@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 20px;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #e50914;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+
+        th {
+            background-color: #111;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background-color: #333;
+        }
+
+        th.sortable:hover::after {
+            content: ' ▾';
+        }
+
+        .sort-asc::after {
+            content: ' ▴';
+        }
+
+        .sort-desc::after {
+            content: ' ▾';
+        }
+
+        tr:hover {
+            background-color: #333;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+    <script>
+        var sortBy = "name";
+
+        function sortTable(columnIndex) {
+            var table, rows, switching, i, x, y, shouldSwitch;
+            table = document.getElementById("citizenTable");
+            switching = true;
+            var sortDirection = "asc";
+
+            // Toggle sorting direction when clicking the same column header
+            if (sortBy === columnIndex) {
+                sortDirection = document.getElementById("header_" + columnIndex).classList.contains("sort-asc") ? "desc" : "asc";
+            }
+
+            // Remove sorting classes from all headers
+            var headers = document.getElementsByTagName("th");
+            for (var j = 0; j < headers.length; j++) {
+                headers[j].classList.remove("sort-asc", "sort-desc");
+            }
+
+            // Add sorting class to the clicked header
+            document.getElementById("header_" + columnIndex).classList.add("sort-" + sortDirection);
+
+            /* Make a loop that will continue until no switching has been done: */
+            while (switching) {
+                // Start by saying: no switching is done:
+                switching = false;
+                rows = table.rows;
+                /* Loop through all table rows (except the first, which contains table headers): */
+                for (i = 1; i < (rows.length - 1); i++) {
+                    // Start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* Get the two elements you want to compare, one from current row and one from the next: */
+                    x = rows[i].getElementsByTagName("TD")[columnIndex];
+                    y = rows[i + 1].getElementsByTagName("TD")[columnIndex];
+                    /* Check if the two rows should switch place, based on the direction, asc or desc: */
+                    if (sortDirection === "asc") {
+                        if (columnIndex === 1) {
+                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (columnIndex === 2) {
+                            if (Date.parse(x.innerHTML) > Date.parse(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        if (columnIndex === 1) {
+                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (columnIndex === 2) {
+                            if (Date.parse(x.innerHTML) < Date.parse(y.innerHTML)) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch and mark that a switch has been done: */
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+
+            sortBy = columnIndex;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Database Contents</h1>
+        <table id="citizenTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)" class="sortable" id="header_0">ID</th>
+                    <th onclick="sortTable(1)" class="sortable" id="header_1">Name of Citizen</th>
+                    <th onclick="sortTable(2)" class="sortable" id="header_2">Spotted Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record[0] }}</td>
+                    <td>{{ record[1] }}</td>
+                    <td>{{ record[2] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+</body>
+</html>
